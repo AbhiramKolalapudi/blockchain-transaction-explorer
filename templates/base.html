@@ -6,6 +6,7 @@
   <link rel="preconnect" href="https://fonts.googleapis.com"><link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=DM+Mono:wght@400;500&family=DM+Sans:wght@400;500;600;700&family=Manrope:wght@400;500;600;700;800&display=swap" rel="stylesheet">
   <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
+  <style>.nav-link span{flex:0 0 19px;white-space:nowrap}</style>
 </head>
 <body>
 <aside class="sidebar">
@@ -18,7 +19,7 @@
     <a class="nav-link {% if request.endpoint == 'transfers' %}active{% endif %}" href="{{ url_for('transfers') }}"><span>◈</span> Token transfers</a>
     <a class="nav-link {% if request.endpoint in ['addresses','address_detail'] %}active{% endif %}" href="{{ url_for('addresses') }}"><span>⌘</span> Wallets</a>
     <a class="nav-link {% if request.endpoint in ['wallet_activity','wallet_activity_new','wallet_activity_edit'] %}active{% endif %}" href="{{ url_for('wallet_activity') }}"><span>◷</span> Wallet activity</a>
-    <a class="nav-link {% if request.endpoint in ['transaction_events','transaction_event_new','transaction_event_edit'] %}active{% endif %}" href="{{ url_for('transaction_events') }}"><span>{ }</span> Event explorer</a>
+    <a class="nav-link {% if request.endpoint in ['transaction_events','transaction_event_new','transaction_event_edit'] %}active{% endif %}" href="{{ url_for('transaction_events') }}"><span>◇</span> Event explorer</a>
     <a class="nav-link {% if request.endpoint == 'watchlists' %}active{% endif %}" href="{{ url_for('watchlists') }}"><span>☆</span> Watchlists</a>
   </nav>
   <div class="sidebar-bottom">DATA STORES<br><small>MySQL + MongoDB</small></div>
