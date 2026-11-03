@@ -1,0 +1,21 @@
+{% extends 'base.html' %}{% block title %}Overview{% endblock %}{% block content %}
+<div class="page-heading"><div><div class="eyebrow">NETWORK OVERVIEW <span class="live-dot"></span></div><h1>Good afternoon, explorer.</h1><p>Here’s what’s happening across your blockchain data.</p></div><a class="button button-quiet" href="{{ url_for('transactions') }}">View transactions <span>↗</span></a></div>
+<div class="stats-grid">
+  <article class="stat-card"><div class="stat-top"><span>Total blocks</span><span class="stat-icon violet">▤</span></div><strong>{{ fmt(stats.blocks,0) }}</strong><small>Indexed on this network</small></article>
+  <article class="stat-card"><div class="stat-top"><span>Transactions</span><span class="stat-icon blue">⇄</span></div><strong>{{ fmt(stats.transactions,0) }}</strong><small>Across all blocks</small></article>
+  <article class="stat-card"><div class="stat-top"><span>Wallet addresses</span><span class="stat-icon teal">⌘</span></div><strong>{{ fmt(stats.addresses,0) }}</strong><small>EOAs and contracts</small></article>
+  <article class="stat-card"><div class="stat-top"><span>Token transfers</span><span class="stat-icon orange">◈</span></div><strong>{{ fmt(stats.transfers,0) }}</strong><small>Tracked token movements</small></article>
+</div>
+<div class="dashboard-grid">
+  <article class="panel activity-panel"><div class="panel-heading"><div><h2>Transaction activity</h2><p>Daily transactions in your dataset</p></div><span class="tag">7 RECORDED DAYS</span></div>
+    <div class="activity-chart">{% for row in activity %}<div class="bar-column"><span>{{ row.total }}</span><div class="bar" style="height:{{ 18 + (row.total / max_activity * 108)|int }}px"></div><small>{{ row.day.strftime('%b %d') }}</small></div>{% endfor %}</div>
+    <div class="status-legend">{% for item in statuses %}<span><i class="status-dot {{ item.status|lower }}"></i>{{ item.status }} <b>{{ item.total }}</b></span>{% endfor %}</div>
+  </article>
+  <article class="panel blocks-panel"><div class="panel-heading"><div><h2>Latest blocks</h2><p>Recently indexed blocks</p></div><a class="text-link" href="{{ url_for('blocks') }}">All blocks ↗</a></div>
+    <div class="compact-list">{% for block in latest_blocks %}<a href="{{ url_for('block_detail', number=block.block_number) }}" class="compact-row"><span class="block-glyph">▤</span><span class="compact-main"><b>#{{ block.block_number }}</b><small>{{ block.timestamp.strftime('%b %d, %H:%M') }}</small></span><span class="compact-end"><b>{{ block.transaction_count }} txns</b><small>{{ fmt(block.gas_used,0) }} gas</small></span></a>{% endfor %}</div>
+  </article>
+</div>
+<article class="panel table-panel"><div class="panel-heading"><div><h2>Recent transactions</h2><p>Latest activity from your ledger</p></div><a class="text-link" href="{{ url_for('transactions') }}">View all transactions ↗</a></div>
+  <div class="table-wrap"><table><thead><tr><th>TRANSACTION HASH</th><th>BLOCK</th><th>FROM → TO</th><th>AMOUNT</th><th>STATUS</th><th>TIME</th></tr></thead><tbody>{% for tx in latest_transactions %}<tr><td><a class="mono link" href="{{ url_for('transaction_detail',tx_hash=tx.tx_hash) }}">{{ short_hash(tx.tx_hash) }}</a></td><td><a class="mono link" href="{{ url_for('block_detail',number=tx.block_number) }}">#{{ tx.block_number }}</a></td><td class="route-cell"><a href="{{ url_for('address_detail',address=tx.from_address) }}">{{ short_hash(tx.from_address,8) }}</a><span>→</span><a href="{{ url_for('address_detail',address=tx.to_address) }}">{{ short_hash(tx.to_address,8) }}</a></td><td class="mono">{{ fmt(tx.amount) }} ETH</td><td><span class="status {{ tx.status|lower }}">{{ tx.status }}</span></td><td class="muted">{{ tx.timestamp.strftime('%b %d, %H:%M') }}</td></tr>{% endfor %}</tbody></table></div>
+</article>
+{% endblock %}

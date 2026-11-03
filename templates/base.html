@@ -1,0 +1,34 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>{% block title %}ChainScope{% endblock %} · ChainScope</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com"><link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=DM+Mono:wght@400;500&family=DM+Sans:wght@400;500;600;700&family=Manrope:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
+</head>
+<body>
+<aside class="sidebar">
+  <a href="{{ url_for('dashboard') }}" class="brand"><span class="brand-icon">◈</span><span>chain<span class="brand-light">scope</span><small>BLOCKCHAIN EXPLORER</small></span></a>
+  <div class="nav-label">WORKSPACE</div>
+  <nav>
+    <a class="nav-link {% if request.endpoint == 'dashboard' %}active{% endif %}" href="{{ url_for('dashboard') }}"><span>▦</span> Overview</a>
+    <a class="nav-link {% if request.endpoint in ['transactions','transaction_detail'] %}active{% endif %}" href="{{ url_for('transactions') }}"><span>⇄</span> Transactions</a>
+    <a class="nav-link {% if request.endpoint in ['blocks','block_detail'] %}active{% endif %}" href="{{ url_for('blocks') }}"><span>▤</span> Blocks</a>
+    <a class="nav-link {% if request.endpoint == 'transfers' %}active{% endif %}" href="{{ url_for('transfers') }}"><span>◈</span> Token transfers</a>
+    <a class="nav-link {% if request.endpoint in ['addresses','address_detail'] %}active{% endif %}" href="{{ url_for('addresses') }}"><span>⌘</span> Wallets</a>
+    <a class="nav-link {% if request.endpoint == 'watchlists' %}active{% endif %}" href="{{ url_for('watchlists') }}"><span>☆</span> Watchlists</a>
+  </nav>
+  <div class="sidebar-bottom"><span class="live-dot"></span> MySQL connection<br><small>blockchain_explorer</small></div>
+</aside>
+<main class="main">
+  <header class="topbar">
+    <form action="{{ url_for('search') }}" class="global-search"><span>⌕</span><input name="q" placeholder="Search by address / tx hash / block" value="{{ request.args.get('q','') }}"><kbd>↵</kbd></form>
+    <div class="top-meta"><span class="network-pill"><i></i> LOCAL NETWORK</span><span class="avatar">A</span></div>
+  </header>
+  {% with messages = get_flashed_messages(with_categories=true) %}{% if messages %}<div class="flash-stack">{% for category,message in messages %}<div class="flash {{ category }}">{{ message }}</div>{% endfor %}</div>{% endif %}{% endwith %}
+  <section class="content">{% block content %}{% endblock %}</section>
+  <footer>ChainScope <span>·</span> Blockchain Transaction Explorer & Analytics Platform</footer>
+</main>
+</body>
+</html>
