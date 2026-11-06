@@ -181,6 +181,70 @@ def transactions():
     return render_template("transactions.html", rows=rows, status=status, term=term)
 
 
+@app.route("/transactions/new", methods=["GET", "POST"])
+def transaction_new():
+    blocks = query("SELECT block_number FROM block ORDER BY block_number DESC")
+    addresses = query("SELECT address FROM address ORDER BY address")
+    form = request.form if request.method == "POST" else {}
+    now_utc = datetime.now(timezone.utc).strftime("%Y-%m-%dT%H:%M")
+    if request.method == "POST":
+        trigger = query("""
+            SELECT TRIGGER_NAME FROM information_schema.TRIGGERS
+            WHERE TRIGGER_SCHEMA=%s AND TRIGGER_NAME=%s
+        """, (DB_CONFIG["database"], "validate_transaction_amount"), one=True)
+        if not trigger:
+            flash("The transaction validation rules are not installed in this MySQL database. Load the project schema first.", "error")
+            return render_template("transaction_form.html", form=form, blocks=blocks, addresses=addresses, now_utc=now_utc), 409
+
+        tx_hash = request.form.get("tx_hash", "").strip()
+        status = request.form.get("status", "")
+        try:
+            amount = Decimal(request.form.get("amount", ""))
+            gas_fee = Decimal(request.form.get("gas_fee", ""))
+            block_number = int(request.form.get("block_number", ""))
+            timestamp = parse_timestamp(request.form.get("timestamp", "")).replace(tzinfo=None)
+            from_address = request.form.get("from_address", "")
+            to_address = request.form.get("to_address", "")
+            if not tx_hash or len(tx_hash) > 66:
+                raise ValueError("Enter a transaction hash up to 66 characters long.")
+            if not amount.is_finite() or not gas_fee.is_finite():
+                raise ValueError("Amount and gas fee must be numeric values.")
+            if status not in {"Success", "Failed", "Pending"}:
+                raise ValueError("Choose a valid transaction status.")
+            if not from_address or not to_address:
+                raise ValueError("Choose both sender and receiver addresses.")
+        except (ValueError, ArithmeticError) as error:
+            flash(str(error) or "Enter valid transaction values.", "error")
+            return render_template("transaction_form.html", form=form, blocks=blocks, addresses=addresses, now_utc=now_utc), 400
+
+        connection = None
+        try:
+            connection = mysql.connector.connect(**DB_CONFIG)
+            cursor = connection.cursor()
+            # Deliberately do not validate amount > 0 or gas_fee >= 0 here;
+            # MySQL's BEFORE INSERT trigger must accept or reject these values.
+            cursor.execute("""
+                INSERT INTO blockchain_transaction
+                    (tx_hash, amount, gas_fee, status, timestamp, block_number, from_address, to_address)
+                VALUES (%s, %s, %s, %s, %s, %s, %s, %s)
+            """, (tx_hash, amount, gas_fee, status, timestamp, block_number, from_address, to_address))
+            connection.commit()
+        except Error as error:
+            if connection:
+                connection.rollback()
+            message = getattr(error, "msg", str(error))
+            flash(f"MySQL rejected the insert: {message}", "error")
+            return render_template("transaction_form.html", form=form, blocks=blocks, addresses=addresses, now_utc=now_utc), 400
+        finally:
+            if connection:
+                connection.close()
+
+        flash("Transaction added successfully.", "success")
+        return redirect(url_for("transaction_detail", tx_hash=tx_hash))
+
+    return render_template("transaction_form.html", form=form, blocks=blocks, addresses=addresses, now_utc=now_utc)
+
+
 @app.route("/transactions/<tx_hash>")
 def transaction_detail(tx_hash):
     row = query("""
