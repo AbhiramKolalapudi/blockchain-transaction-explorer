@@ -17,7 +17,7 @@ from pymongo.errors import PyMongoError
 load_dotenv()
 app = Flask(__name__)
 app.secret_key = os.getenv("FLASK_SECRET_KEY", "local-blockchain-explorer-key")
-
+#config file
 DB_CONFIG = {
     "host": os.getenv("DB_HOST", "localhost"),
     "port": int(os.getenv("DB_PORT", "3306")),
