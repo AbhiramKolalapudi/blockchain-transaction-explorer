@@ -7,7 +7,7 @@ ChainScope is a Flask blockchain explorer that uses MySQL for relational blockch
 - Overview cards, transaction activity, recent blocks, and latest transactions
 - Search by transaction hash, block number or hash, and wallet address
 - Filterable transaction, block, wallet, and token transfer tables
-- Add transactions through the app to demonstrate MySQL's amount and gas-fee trigger
+- Add transactions through the app; MySQL enforces valid amount and gas-fee values
 - Transaction, block, and wallet detail pages with linked records
 - Create watchlists, add or remove addresses, and switch between the seeded users
 - Import MySQL transaction and token-transfer history into MongoDB, then create, read, edit, filter, and delete wallet activity documents

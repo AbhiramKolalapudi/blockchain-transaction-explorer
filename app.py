@@ -193,7 +193,7 @@ def transaction_new():
             WHERE TRIGGER_SCHEMA=%s AND TRIGGER_NAME=%s
         """, (DB_CONFIG["database"], "validate_transaction_amount"), one=True)
         if not trigger:
-            flash("The validate_transaction_amount trigger is not installed in this MySQL database. Load the project schema first.", "error")
+            flash("The transaction validation rules are not installed in this MySQL database. Load the project schema first.", "error")
             return render_template("transaction_form.html", form=form, blocks=blocks, addresses=addresses, now_utc=now_utc), 409
 
         tx_hash = request.form.get("tx_hash", "").strip()
@@ -239,7 +239,7 @@ def transaction_new():
             if connection:
                 connection.close()
 
-        flash("Transaction inserted. The database trigger accepted these values.", "success")
+        flash("Transaction added successfully.", "success")
         return redirect(url_for("transaction_detail", tx_hash=tx_hash))
 
     return render_template("transaction_form.html", form=form, blocks=blocks, addresses=addresses, now_utc=now_utc)
