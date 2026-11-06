@@ -14,7 +14,7 @@
   <div class="nav-label">WORKSPACE</div>
   <nav>
     <a class="nav-link {% if request.endpoint == 'dashboard' %}active{% endif %}" href="{{ url_for('dashboard') }}"><span>▦</span> Overview</a>
-    <a class="nav-link {% if request.endpoint in ['transactions','transaction_detail'] %}active{% endif %}" href="{{ url_for('transactions') }}"><span>⇄</span> Transactions</a>
+    <a class="nav-link {% if request.endpoint in ['transactions','transaction_detail','transaction_new'] %}active{% endif %}" href="{{ url_for('transactions') }}"><span>⇄</span> Transactions</a>
     <a class="nav-link {% if request.endpoint in ['blocks','block_detail'] %}active{% endif %}" href="{{ url_for('blocks') }}"><span>▤</span> Blocks</a>
     <a class="nav-link {% if request.endpoint == 'transfers' %}active{% endif %}" href="{{ url_for('transfers') }}"><span>◈</span> Token transfers</a>
     <a class="nav-link {% if request.endpoint in ['addresses','address_detail'] %}active{% endif %}" href="{{ url_for('addresses') }}"><span>⌘</span> Wallets</a>
