@@ -1,6 +1,6 @@
 # ChainScope
 
-ChainScope is a Flask blockchain explorer that uses MySQL for relational blockchain data and MongoDB for flexible wallet activity and smart contract event documents. It extends the existing `blockchain_explorer` schema in `blockchain_explorer_backup.sql`.
+ChainScope is a Flask blockchain explorer that uses MySQL for relational blockchain data and MongoDB for flexible wallet activity and smart contract event documents. It expects the existing `blockchain_explorer` schema to be available in MySQL.
 
 ## Features
 
@@ -16,17 +16,13 @@ ChainScope is a Flask blockchain explorer that uses MySQL for relational blockch
 ## Run locally
 
 1. Install MySQL 8 and MongoDB Community Server. Start both database services.
-2. Import the supplied MySQL schema and sample data from this folder. In PowerShell, open the MySQL client, then run the `source` command at its `mysql>` prompt:
+2. Create or import the `blockchain_explorer` database using your course schema materials. The schema file is not included in this repository. If using the MySQL command-line client, connect from PowerShell:
 
    ```powershell
    mysql -u root -p
    ```
 
-   ```sql
-   source C:/Abhiram/PES/DBMS Lab/MiniProject/blockchain_explorer_backup.sql
-   ```
-
-   The backup creates and selects the `blockchain_explorer` database. If `mysql` is not on PATH, launch `mysql.exe` using its full install path.
+   If `mysql` is not on PATH, launch `mysql.exe` using its full install path. Import your schema from the MySQL prompt or MySQL Workbench before starting the app.
 3. Create and activate a virtual environment, then install Flask, the MySQL connector, and PyMongo:
 
    ```powershell
@@ -57,5 +53,4 @@ The Wallet Activity page can import a selected wallet's MySQL transactions and t
 app.py                 Flask routes, MySQL queries, and MongoDB CRUD
 templates/             Jinja pages and forms
 static/style.css       Responsive explorer styles
-blockchain_explorer_backup.sql  MySQL schema and sample records
 ```
